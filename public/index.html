@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriSpark AI | Premium Agricultural Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --glass: rgba(15, 23, 42, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.5);
+      --secondary: #34d399;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background-color: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .bg-blobs { position: absolute; width: 100%; height: 100%; z-index: -1; filter: blur(80px); }
+    .blob { position: absolute; width: 400px; height: 400px; border-radius: 50%; animation: move 20s infinite alternate; }
+    .blob-1 { top: -10%; left: -10%; background: rgba(16, 185, 129, 0.2); }
+    .blob-2 { bottom: -10%; right: -10%; background: rgba(52, 211, 153, 0.2); animation-delay: -5s; }
+    @keyframes move { from { transform: translate(0, 0) scale(1); } to { transform: translate(100px, 100px) scale(1.2); } }
+    .container { background: var(--glass); backdrop-filter: blur(20px); padding: 3rem; border-radius: 2rem; border: 1px solid var(--glass-border); width: 100%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .logo-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 1.25rem; display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem; box-shadow: 0 0 30px var(--primary-glow); }
+    .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; color: var(--primary); font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .pulse { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+    h1 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem; background: linear-gradient(to right, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p { color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.6; font-size: 1.05rem; }
+    input { width: 100%; padding: 1.25rem 1.5rem; background: rgba(2, 6, 23, 0.5); border: 1px solid var(--glass-border); border-radius: 1rem; color: white; font-size: 1.1rem; outline: none; transition: all 0.3s; margin-bottom: 1.5rem; }
+    input:focus { border-color: var(--primary); transform: scale(1.02); }
+    button { width: 100%; padding: 1.25rem; border-radius: 1rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: #020617; font-size: 1.1rem; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 10px 20px -5px var(--primary-glow); }
+    button:hover { transform: translateY(-4px); }
+    button:disabled { opacity: 0.7; }
+    .status-msg { margin-top: 1.5rem; font-size: 0.95rem; }
+    .success { color: var(--primary); }
+    .error { color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="bg-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
+  <div class="container">
+    <div class="logo-icon"><svg viewBox="0 0 24 24" width="32" fill="white"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" /></svg></div>
+    <div class="status-badge"><div class="pulse"></div>AgriSpark AI Online</div>
+    <h1>AgriSpark</h1>
+    <p>Empowering farmers with Ph.D. grade intelligence. Trigger an AI consultation call instantly.</p>
+    <input type="tel" id="phoneNumber" placeholder="+CountryCode Number">
+    <button id="callBtn" onclick="initiateCall()">Initiate AI Voice Call</button>
+    <div id="status" class="status-msg"></div>
+  </div>
+  <script>
+    async function initiateCall() {
+      const btn = document.getElementById('callBtn');
+      const status = document.getElementById('status');
+      const phone = document.getElementById('phoneNumber').value.trim();
+      if (!phone.startsWith('+')) { status.textContent = "Use international format (+...)"; status.className = "status-msg error"; return; }
+      btn.disabled = true; status.textContent = "Initiating...";
+      try {
+        const res = await fetch('/api/call', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phoneNumber: phone }) });
+        const data = await res.json();
+        if (data.success) { status.textContent = "Call Dispatched! 🚜"; status.className = "status-msg success"; }
+        else { status.textContent = "Error: " + data.error; status.className = "status-msg error"; }
+      } catch (err) { status.textContent = "Network error."; status.className = "status-msg error"; }
+      finally { btn.disabled = false; }
+    }
+  </script>
+</body>
+</html>

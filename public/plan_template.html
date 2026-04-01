@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detailed Farming Manual - AgriSpark AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root { --bg: #ffffff; --text: #1a1a1a; --header-bg: #1a4d2e; --accent: #10b981; }
+    body { font-family: 'Outfit', sans-serif; background: #f3f4f6; line-height: 1.6; padding: 2rem; }
+    .page { max-width: 800px; margin: 0 auto; background: white; padding: 3rem; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .header { background: var(--header-bg); color: white; padding: 2rem; margin: -3rem -3rem 2rem -3rem; border-radius: 1rem 1rem 0 0; text-align: center; }
+    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem; }
+    .meta div { font-size: 0.9rem; }
+    .content h2 { border-left: 5px solid var(--accent); padding-left: 1rem; color: var(--header-bg); margin-top: 2rem; }
+    .print-btn { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent); color: white; padding: 1rem 2rem; border-radius: 2rem; border: none; font-weight: 700; cursor: pointer; }
+    @media print { .print-btn { display: none; } .page { box-shadow: none; padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header"><h1>AgriSpark PhD AI | Farming Plan</h1></div>
+    <div class="meta">
+      <div><strong>Farmer:</strong> <span id="name"></span></div>
+      <div><strong>Location:</strong> <span id="location"></span></div>
+      <div><strong>Region:</strong> <span id="region"></span></div>
+      <div><strong>Climate:</strong> <span id="climate"></span></div>
+      <div><strong>Target Crop:</strong> <span id="crop"></span></div>
+      <div><strong>Soil Type:</strong> <span id="soil"></span></div>
+    </div>
+    <div id="loading">Consulting PhD Database...</div>
+    <div id="content"></div>
+  </div>
+  <button class="print-btn" onclick="window.print()">Download PDF</button>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const fields = ['name', 'location', 'region', 'climate', 'targetCrop', 'soilType', 'terrain'];
+    fields.forEach(f => { if(document.getElementById(f)) document.getElementById(f).textContent = params.get(f) || 'Unknown'; });
+    document.getElementById('name').textContent = params.get('name');
+    document.getElementById('location').textContent = params.get('location');
+    document.getElementById('region').textContent = params.get('region');
+    document.getElementById('climate').textContent = params.get('climate');
+    document.getElementById('crop').textContent = params.get('targetCrop');
+    document.getElementById('soil').textContent = params.get('soilType');
+
+    async function load() {
+      const res = await fetch(`/api/detailed-manual?${params.toString()}`);
+      const data = await res.json();
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').innerHTML = marked.parse(data.plan);
+    }
+    load();
+  </script>
+</body>
+</html>
