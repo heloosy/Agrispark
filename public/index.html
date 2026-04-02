@@ -532,6 +532,7 @@
     }
 
     async function triggerSimStep(url, params) {
+      console.log(`[Simulator] Fetching: ${url}`, params);
       document.getElementById('simTyping').style.display = 'block';
       document.getElementById('simKeypad').style.display = 'none';
       document.getElementById('simInputGroup').style.display = 'none';
@@ -548,11 +549,17 @@
           body: formData.toString()
         });
 
+        if (!response.ok) throw new Error(`Server returned status: ${response.status}`);
+
         const xmlText = await response.text();
+        console.log(`[Simulator] Received TwiML:`, xmlText);
         await parseTwiML(xmlText, url);
       } catch (err) {
-        addSimMsg('ai', "Error connecting to simulator. Please check console.");
-        console.error(err);
+        addSimMsg('ai', "🚨 Error: " + err.message);
+        console.error("[Simulator Critical Error]:", err);
+        // Let user retry
+        document.getElementById('startSimBtn').style.display = 'block';
+        document.getElementById('startSimBtn').textContent = 'Retry Step';
       } finally {
         document.getElementById('simTyping').style.display = 'none';
       }
@@ -561,11 +568,22 @@
     async function parseTwiML(xml, lastUrl) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(xml, "text/xml");
+      
+      // Check for parsing errors
+      if (doc.getElementsByTagName("parsererror").length > 0) {
+        addSimMsg('ai', "🚨 Error: Server returned invalid TwiML. Check your backend console!");
+        return;
+      }
+
       const says = doc.getElementsByTagName("Say");
       const gather = doc.getElementsByTagName("Gather")[0];
       const redirect = doc.getElementsByTagName("Redirect")[0];
 
       // 1. Process Voice Responses
+      if (says.length === 0 && !gather && !redirect) {
+         addSimMsg('ai', "(Silent Step - Check your TwiML logic)");
+      }
+
       for (let s of says) {
         addSimMsg('ai', s.textContent);
       }
@@ -574,6 +592,8 @@
       if (gather) {
         currentSimUrl = gather.getAttribute('action');
         const inputType = gather.getAttribute('input');
+        console.log(`[Simulator] Waiting for ${inputType === 'speech' ? 'Speech' : 'Digits'} at ${currentSimUrl}`);
+        
         if (inputType === 'speech') {
           document.getElementById('simInputGroup').style.display = 'flex';
         } else {
@@ -581,16 +601,21 @@
         }
       } else if (redirect) {
         // Handle auto-redirect loops
-        setTimeout(() => triggerSimStep(redirect.textContent, {}), 1500);
+        const nextUrl = redirect.textContent.trim();
+        console.log(`[Simulator] Auto-redirecting to: ${nextUrl}`);
+        setTimeout(() => triggerSimStep(nextUrl, {}), 1500);
       } else {
         // Hangup or end of TwiML
         const hangup = doc.getElementsByTagName("Hangup")[0];
-        if (hangup) {
-           addSimMsg('ai', "-- Call Terminated --");
-           setTimeout(() => {
-             alert("The consultation is complete. Check your WhatsApp for the manual!");
-             closeSimulator();
-           }, 2000);
+        if (hangup || says.length > 0) {
+           // For simple Says with no follow up, we show the end
+           if (!gather && !redirect) {
+              addSimMsg('ai', "-- End of Instruction --");
+              setTimeout(() => {
+                alert("Consultation reached a logical end. Resetting simulator.");
+                resetSim();
+              }, 3000);
+           }
         }
       }
     }
