@@ -16,55 +16,583 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background-color: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-    .bg-blobs { position: absolute; width: 100%; height: 100%; z-index: -1; filter: blur(80px); }
-    .blob { position: absolute; width: 400px; height: 400px; border-radius: 50%; animation: move 20s infinite alternate; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      perspective: 1000px;
+    }
+
+    /* Animated Background */
+    .bg-blobs {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      filter: blur(80px);
+    }
+
+    .blob {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: var(--primary-glow);
+      border-radius: 50%;
+      animation: move 20s infinite alternate;
+    }
+
     .blob-1 { top: -10%; left: -10%; background: rgba(16, 185, 129, 0.2); }
     .blob-2 { bottom: -10%; right: -10%; background: rgba(52, 211, 153, 0.2); animation-delay: -5s; }
-    @keyframes move { from { transform: translate(0, 0) scale(1); } to { transform: translate(100px, 100px) scale(1.2); } }
-    .container { background: var(--glass); backdrop-filter: blur(20px); padding: 3rem; border-radius: 2rem; border: 1px solid var(--glass-border); width: 100%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-    .logo-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 1.25rem; display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem; box-shadow: 0 0 30px var(--primary-glow); }
-    .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; color: var(--primary); font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; border: 1px solid rgba(16, 185, 129, 0.2); }
-    .pulse { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-    h1 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem; background: linear-gradient(to right, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    p { color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.6; font-size: 1.05rem; }
-    input { width: 100%; padding: 1.25rem 1.5rem; background: rgba(2, 6, 23, 0.5); border: 1px solid var(--glass-border); border-radius: 1rem; color: white; font-size: 1.1rem; outline: none; transition: all 0.3s; margin-bottom: 1.5rem; }
-    input:focus { border-color: var(--primary); transform: scale(1.02); }
-    button { width: 100%; padding: 1.25rem; border-radius: 1rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: #020617; font-size: 1.1rem; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 10px 20px -5px var(--primary-glow); }
-    button:hover { transform: translateY(-4px); }
-    button:disabled { opacity: 0.7; }
-    .status-msg { margin-top: 1.5rem; font-size: 0.95rem; }
+
+    @keyframes move {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(100px, 100px) scale(1.2); }
+    }
+
+    .container {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 3rem;
+      border-radius: 2rem;
+      border: 1px solid var(--glass-border);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-container {
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: 1.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+
+    .logo-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: white;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #fff, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+      font-size: 1.05rem;
+      font-weight: 300;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 1.25rem 1.5rem;
+      background: rgba(2, 6, 23, 0.5);
+      border: 1px solid var(--glass-border);
+      border-radius: 1rem;
+      color: white;
+      font-size: 1.1rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+      transform: scale(1.02);
+    }
+
+    button {
+      width: 100%;
+      padding: 1.25rem;
+      border: none;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #020617;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 20px -5px var(--primary-glow);
+    }
+
+    button:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 30px -10px var(--primary-glow);
+    }
+
+    button:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    .status-msg {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      min-height: 24px;
+      transition: all 0.3s;
+    }
+
     .success { color: var(--primary); }
     .error { color: #f87171; }
+
+    .loader {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(2, 6, 23, 0.2);
+      border-top-color: #020617;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer Credits */
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    /* --- SIMULATOR OVERLAY --- */
+    #simulatorOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.95);
+      backdrop-filter: blur(40px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .sim-container {
+      width: 100%;
+      max-width: 500px;
+      height: 80vh;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 2rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    }
+
+    .sim-header {
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sim-body {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 1rem 1.25rem;
+      border-radius: 1.25rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      animation: msgSlide 0.3s ease-out;
+    }
+
+    @keyframes msgSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-ai {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border-bottom-left-radius: 0.25rem;
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: var(--primary);
+      color: #020617;
+      font-weight: 600;
+      border-bottom-right-radius: 0.25rem;
+    }
+
+    .sim-footer {
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.03);
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .sim-input-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .key {
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 0.75rem;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .key:hover { background: var(--primary); color: #020617; }
+
+    .sim-close {
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .sim-close:hover { color: #f87171; }
+
+    .typing-indicator {
+      font-size: 0.8rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <div class="bg-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
-  <div class="container">
-    <div class="logo-icon"><svg viewBox="0 0 24 24" width="32" fill="white"><path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" /></svg></div>
-    <div class="status-badge"><div class="pulse"></div>AgriSpark AI Online</div>
-    <h1>AgriSpark</h1>
-    <p>Empowering farmers with Ph.D. grade intelligence. Trigger an AI consultation call instantly.</p>
-    <input type="tel" id="phoneNumber" placeholder="+CountryCode Number">
-    <button id="callBtn" onclick="initiateCall()">Initiate AI Voice Call</button>
-    <div id="status" class="status-msg"></div>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
   </div>
+
+  <div class="container">
+    <div class="logo-container">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" />
+        </svg>
+      </div>
+      <div class="status-badge">
+        <div class="pulse"></div>
+        AgriSpark AI Online
+      </div>
+    </div>
+
+    <h1>AgriSpark</h1>
+    <p>Empowering farmers with Ph.D. grade intelligence. Trigger a direct AI consultation call to your mobile device instantly.</p>
+
+    <div class="input-group">
+      <input type="tel" id="phoneNumber" placeholder="+CountryCode Number" autocomplete="tel">
+    </div>
+
+    <button id="callBtn" onclick="initiateCall()">
+      <div class="loader" id="loader"></div>
+      <span id="btnText">Initiate AI Voice Call</span>
+    </button>
+
+    <div id="status" class="status-msg"></div>
+
+    <div class="footer">
+      Powered by Google Gemini & Twilio Cloud
+    </div>
+    <div style="margin-top: 1rem;">
+      <a href="javascript:void(0)" onclick="openSimulator()" style="color: var(--primary); font-size: 0.9rem; text-decoration: none; border-bottom: 1px dashed var(--primary);">Open Virtual IVR Simulator</a>
+    </div>
+  </div>
+
+  <!-- VIRTUAL SIMULATOR MODAL -->
+  <div id="simulatorOverlay">
+    <div class="sim-container">
+      <div class="sim-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div class="pulse"></div>
+          <span style="font-weight: 600; font-size: 1.1rem;">PhD Call Simulator</span>
+        </div>
+        <div class="sim-close" onclick="closeSimulator()">✕ Close</div>
+      </div>
+      
+      <div class="sim-body" id="simBody">
+        <!-- Messages appear here -->
+      </div>
+
+      <div class="sim-footer">
+        <div class="typing-indicator" id="simTyping">PhD Agronomist is thinking...</div>
+        
+        <div id="simKeypad" class="keypad" style="display: none;">
+          <button class="key" onclick="submitSimValue('1')">1</button>
+          <button class="key" onclick="submitSimValue('2')">2</button>
+          <button class="key" onclick="submitSimValue('3')">3</button>
+        </div>
+
+        <div id="simInputGroup" class="sim-input-row" style="display: none;">
+          <input type="text" id="simInput" placeholder="Simulate speech input..." onkeypress="if(event.key==='Enter') submitSimValue(this.value)">
+          <button onclick="submitSimValue(document.getElementById('simInput').value)" style="width: auto; padding: 0 1.5rem;">Send</button>
+        </div>
+        
+        <button id="startSimBtn" onclick="startSim()">Begin Virtual Consultation</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     async function initiateCall() {
       const btn = document.getElementById('callBtn');
+      const loader = document.getElementById('loader');
+      const btnText = document.getElementById('btnText');
       const status = document.getElementById('status');
-      const phone = document.getElementById('phoneNumber').value.trim();
-      if (!phone.startsWith('+')) { status.textContent = "Use international format (+...)"; status.className = "status-msg error"; return; }
-      btn.disabled = true; status.textContent = "Initiating...";
+      const phoneInput = document.getElementById('phoneNumber').value.trim();
+
+      if (!phoneInput || !phoneInput.startsWith('+')) {
+        status.textContent = "Please use international format (e.g., +66...)";
+        status.className = "status-msg error";
+        return;
+      }
+
+      // Start Loading
+      btn.disabled = true;
+      loader.style.display = "block";
+      btnText.textContent = "Stabilizing Connection...";
+      status.textContent = "";
+
       try {
-        const res = await fetch('/api/call', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phoneNumber: phone }) });
-        const data = await res.json();
-        if (data.success) { status.textContent = "Call Dispatched! 🚜"; status.className = "status-msg success"; }
-        else { status.textContent = "Error: " + data.error; status.className = "status-msg error"; }
-      } catch (err) { status.textContent = "Network error."; status.className = "status-msg error"; }
-      finally { btn.disabled = false; }
+        const response = await fetch('/api/call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phoneNumber: phoneInput })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          status.textContent = "Incoming Call Dispatched! 🚜";
+          status.className = "status-msg success";
+          btnText.textContent = "Call Active";
+        } else {
+          status.textContent = "Error: " + (data.error || "Connection failed");
+          status.className = "status-msg error";
+          btnText.textContent = "Retry Initiation";
+        }
+      } catch (err) {
+        status.textContent = "Network error. Reach out to support.";
+        status.className = "status-msg error";
+        btnText.textContent = "Retry Initiation";
+      } finally {
+        loader.style.display = "none";
+        btn.disabled = false;
+      }
+    }
+
+    // --- VIRTUAL SIMULATOR LOGIC ---
+    let currentSimUrl = '/voice';
+    let simHistory = [];
+    const simCallerId = '+10000000000'; // Unique ID for browser simulation
+
+    function openSimulator() {
+      document.getElementById('simulatorOverlay').style.display = 'flex';
+    }
+
+    function closeSimulator() {
+      document.getElementById('simulatorOverlay').style.display = 'none';
+      resetSim();
+    }
+
+    function resetSim() {
+      document.getElementById('simBody').innerHTML = '';
+      document.getElementById('startSimBtn').style.display = 'block';
+      document.getElementById('simKeypad').style.display = 'none';
+      document.getElementById('simInputGroup').style.display = 'none';
+      currentSimUrl = '/voice';
+    }
+
+    function addSimMsg(type, text) {
+      const body = document.getElementById('simBody');
+      const div = document.createElement('div');
+      div.className = `msg msg-${type}`;
+      div.textContent = text;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    async function startSim() {
+      document.getElementById('startSimBtn').style.display = 'none';
+      await triggerSimStep('/voice', {});
+    }
+
+    async function submitSimValue(val) {
+      if (!val) return;
+      addSimMsg('user', val);
+      
+      const params = isNaN(val) ? { SpeechResult: val } : { Digits: val };
+      document.getElementById('simInput').value = '';
+      await triggerSimStep(currentSimUrl, params);
+    }
+
+    async function triggerSimStep(url, params) {
+      document.getElementById('simTyping').style.display = 'block';
+      document.getElementById('simKeypad').style.display = 'none';
+      document.getElementById('simInputGroup').style.display = 'none';
+
+      try {
+        const formData = new URLSearchParams();
+        formData.append('From', simCallerId);
+        formData.append('Direction', 'inbound');
+        for (const key in params) formData.append(key, params[key]);
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString()
+        });
+
+        const xmlText = await response.text();
+        await parseTwiML(xmlText, url);
+      } catch (err) {
+        addSimMsg('ai', "Error connecting to simulator. Please check console.");
+        console.error(err);
+      } finally {
+        document.getElementById('simTyping').style.display = 'none';
+      }
+    }
+
+    async function parseTwiML(xml, lastUrl) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xml, "text/xml");
+      const says = doc.getElementsByTagName("Say");
+      const gather = doc.getElementsByTagName("Gather")[0];
+      const redirect = doc.getElementsByTagName("Redirect")[0];
+
+      // 1. Process Voice Responses
+      for (let s of says) {
+        addSimMsg('ai', s.textContent);
+      }
+
+      // 2. Handle Logic Branches
+      if (gather) {
+        currentSimUrl = gather.getAttribute('action');
+        const inputType = gather.getAttribute('input');
+        if (inputType === 'speech') {
+          document.getElementById('simInputGroup').style.display = 'flex';
+        } else {
+          document.getElementById('simKeypad').style.display = 'grid';
+        }
+      } else if (redirect) {
+        // Handle auto-redirect loops
+        setTimeout(() => triggerSimStep(redirect.textContent, {}), 1500);
+      } else {
+        // Hangup or end of TwiML
+        const hangup = doc.getElementsByTagName("Hangup")[0];
+        if (hangup) {
+           addSimMsg('ai', "-- Call Terminated --");
+           setTimeout(() => {
+             alert("The consultation is complete. Check your WhatsApp for the manual!");
+             closeSimulator();
+           }, 2000);
+        }
+      }
     }
   </script>
 </body>
